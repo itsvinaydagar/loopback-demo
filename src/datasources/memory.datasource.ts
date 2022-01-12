@@ -3,7 +3,9 @@ import {juggler} from '@loopback/repository';
 
 const config = {
   name: 'Memory',
-  connector: 'kv-memory'
+  connector: 'memory',
+  localStorage: '',
+  file: './data.json'
 };
 
 // Observe application's life cycle to disconnect the datasource when

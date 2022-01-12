@@ -1,6 +1,6 @@
 import {inject} from '@loopback/core';
 import {DefaultCrudRepository} from '@loopback/repository';
-import {MemDataSource} from '../datasources';
+import {MemoryDataSource} from '../datasources';
 import {User, UserRelations} from '../models';
 
 export class UserRepository extends DefaultCrudRepository<
@@ -9,7 +9,7 @@ export class UserRepository extends DefaultCrudRepository<
   UserRelations
 > {
   constructor(
-    @inject('datasources.Mem') dataSource: MemDataSource,
+    @inject('datasources.Memory') dataSource: MemoryDataSource,
   ) {
     super(User, dataSource);
   }

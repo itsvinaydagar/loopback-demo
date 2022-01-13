@@ -1,10 +1,15 @@
 {
   "ids": {
-    "User": 2
+    "User": 7
   },
   "models": {
     "User": {
-      "1": "{\"firstName\":\"vinay\",\"lastName\":\"dagar\",\"role\":\"admin\",\"email\":\"vinay.dagar@sourcefuse.com\",\"address\":\"some where\",\"createdOn\":\"2022-01-12T11:37:23.370Z\",\"modifiedOn\":\"2022-01-12T11:37:23.370Z\",\"id\":1}"
+      "1": "{\"id\":1,\"firstName\":\"vinay\",\"lastName\":\"\",\"role\":\"admin\",\"email\":\"vinay.dagar@sourcefuse.com\",\"address\":\"some where\",\"createdOn\":\"2022-01-12T11:37:23.370Z\",\"modifiedOn\":\"2022-01-12T11:37:23.370Z\"}",
+      "2": "{\"firstName\":\"sachin\",\"lastName\":\"dagar\",\"role\":\"Subscriber\",\"email\":\"sachin@gmail.com\",\"createdOn\":\"2022-01-13T08:53:06.470Z\",\"modifiedOn\":\"2022-01-13T08:53:06.470Z\",\"id\":2}",
+      "3": "{\"firstName\":\"sachin\",\"lastName\":\"dagar\",\"role\":\"bscriber\",\"email\":\"sachin@gmail.com\",\"createdOn\":\"2022-01-13T08:53:06.470Z\",\"modifiedOn\":\"2022-01-13T08:53:06.470Z\",\"id\":3}",
+      "4": "{\"firstName\":\"sachin\",\"lastName\":\"dagar\",\"role\":\"bscriber\",\"email\":\"sachin@gmail.com\",\"createdOn\":\"2022-01-13T08:53:06.470Z\",\"modifiedOn\":\"2022-01-13T08:53:06.470Z\",\"id\":4}",
+      "5": "{\"firstName\":\"some\",\"role\":\"Admin\",\"email\":\"some@gmail.com\",\"createdOn\":\"2022-01-13T09:17:17.103Z\",\"modifiedOn\":\"2022-01-13T09:17:17.103Z\",\"id\":5}",
+      "6": "{\"firstName\":\"some\",\"role\":\"Admin\",\"email\":\"some@gmail.com\",\"createdOn\":\"2022-01-13T09:17:17.103Z\",\"modifiedOn\":\"2022-01-13T09:17:17.103Z\",\"id\":6}"
     }
   }
 }

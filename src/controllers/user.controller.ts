@@ -8,10 +8,10 @@ import {
 } from '@loopback/repository';
 import {
   del, get,
-  getModelSchemaRef, param, patch, post, put, requestBody,
+  getModelSchemaRef, param, post, put, requestBody,
   response
 } from '@loopback/rest';
-import {User} from '../models';
+import {Role, User} from '../models';
 import {UserRepository} from '../repositories';
 
 export class UserController {
@@ -38,6 +38,9 @@ export class UserController {
     })
     user: User,
   ): Promise<User> {
+    const isRoleValid = !!Role[user.role as Role];
+    if (!isRoleValid) throw new Error('Role does not exist!')
+
     return this.userRepository.create(user);
   }
 
@@ -70,25 +73,6 @@ export class UserController {
     return this.userRepository.find(filter);
   }
 
-  @patch('/users')
-  @response(200, {
-    description: 'User PATCH success count',
-    content: {'application/json': {schema: CountSchema}},
-  })
-  async updateAll(
-    @requestBody({
-      content: {
-        'application/json': {
-          schema: getModelSchemaRef(User, {partial: true}),
-        },
-      },
-    })
-    user: User,
-    @param.where(User) where?: Where<User>,
-  ): Promise<Count> {
-    return this.userRepository.updateAll(user, where);
-  }
-
   @get('/users/{id}')
   @response(200, {
     description: 'User model instance',
@@ -105,24 +89,6 @@ export class UserController {
     return this.userRepository.findById(id, filter);
   }
 
-  @patch('/users/{id}')
-  @response(204, {
-    description: 'User PATCH success',
-  })
-  async updateById(
-    @param.path.number('id') id: number,
-    @requestBody({
-      content: {
-        'application/json': {
-          schema: getModelSchemaRef(User, {partial: true}),
-        },
-      },
-    })
-    user: User,
-  ): Promise<void> {
-    await this.userRepository.updateById(id, user);
-  }
-
   @put('/users/{id}')
   @response(204, {
     description: 'User PUT success',
@@ -131,6 +97,7 @@ export class UserController {
     @param.path.number('id') id: number,
     @requestBody() user: User,
   ): Promise<void> {
+    user.modifiedOn = new Date().toString();
     await this.userRepository.replaceById(id, user);
   }
 

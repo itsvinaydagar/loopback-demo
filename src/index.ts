@@ -1,6 +1,6 @@
-import {format, LoggingBindings, LoggingComponent} from '@loopback/logging';
+import { format, LoggingBindings, LoggingComponent } from '@loopback/logging';
 import dotenv from 'dotenv';
-import {ApplicationConfig, LoopbackDemoApplication} from './application';
+import { ApplicationConfig, LoopbackDemoApplication } from './application';
 
 export * from './application';
 
@@ -18,7 +18,7 @@ export async function main(options: ApplicationConfig = {}) {
   app.configure(LoggingBindings.WINSTON_LOGGER).to({
     level: 'info',
     format: format.json(),
-    defaultMeta: {framework: 'LoopBack'},
+    defaultMeta: { framework: 'LoopBack' },
   });
   app.component(LoggingComponent);
 
@@ -43,6 +43,10 @@ if (require.main === module) {
       openApiSpec: {
         // useful when used with OpenAPI-to-GraphQL to locate your application
         setServersFromRequest: true,
+      },
+      cors: {
+        origin: 'http://localhost:3000',
+        methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
       },
     },
   };

@@ -28,7 +28,7 @@
     "preopenapi-spec": "yarn run build",
     "openapi-spec": "node ./dist/openapi-spec",
     "prestart": "yarn run rebuild",
-    "start": "NODE_ENV=development && node -r source-map-support/register .",
+    "start": "set NODE_ENV=development && node -r source-map-support/register .",
     "clean": "lb-clean dist *.tsbuildinfo .eslintcache",
     "rebuild": "yarn run clean && yarn run build"
   },
@@ -53,6 +53,7 @@
     "@loopback/rest-explorer": "^4.0.1",
     "@loopback/service-proxy": "^4.0.1",
     "dotenv": "^11.0.0",
+    "loopback-connector-postgresql": "^5.0.1",
     "tslib": "^2.0.0"
   },
   "devDependencies": {

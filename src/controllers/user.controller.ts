@@ -4,54 +4,71 @@ import {
   Filter,
   FilterExcludingWhere,
   repository,
-  Where
+  Where,
 } from '@loopback/repository';
 import {
-  del, get,
-  getModelSchemaRef, param, post, put, requestBody,
-  response
+  del,
+  get,
+  getModelSchemaRef,
+  param,
+  post,
+  put,
+  requestBody,
+  response,
 } from '@loopback/rest';
-import {Role, User} from '../models';
-import {UserRepository} from '../repositories';
+import { User } from '../models';
+import { RoleRepository, UserRepository } from '../repositories';
 
 export class UserController {
   constructor(
     @repository(UserRepository)
     public userRepository: UserRepository,
-  ) { }
+    @repository(RoleRepository)
+    public roleRepository: RoleRepository,
+  ) {}
 
-  @post('/users')
+  @post('/users/{role}')
   @response(200, {
     description: 'User model instance',
-    content: {'application/json': {schema: getModelSchemaRef(User)}},
+    content: { 'application/json': { schema: getModelSchemaRef(User) } },
   })
   async create(
+    @param.path.string('role') role: string,
     @requestBody({
       content: {
         'application/json': {
           schema: getModelSchemaRef(User, {
             title: 'NewUser',
-
           }),
         },
       },
     })
     user: User,
   ): Promise<User> {
-    const isRoleValid = !!Role[user.role as Role];
-    if (!isRoleValid) throw new Error('Role does not exist!')
+    const userRole = await this.roleRepository.findOne({
+      where: {
+        key: role,
+      },
+    });
 
-    return this.userRepository.create(user);
+    if (!userRole) throw new Error('Role not defined');
+
+    console.log(userRole);
+    // const isRoleValid = !!Role[user.role as Role];
+    // if (!isRoleValid) throw new Error('Role does not exist!')
+
+    return this.userRepository.create({
+      ...user,
+      roleId: userRole?.id,
+    });
   }
 
   @get('/users/count')
   @response(200, {
     description: 'User model count',
-    content: {'application/json': {schema: CountSchema}},
+    content: { 'application/json': { schema: CountSchema } },
   })
-  async count(
-    @param.where(User) where?: Where<User>,
-  ): Promise<Count> {
+  async count(@param.where(User) where?: Where<User>): Promise<Count> {
     return this.userRepository.count(where);
   }
 
@@ -62,15 +79,20 @@ export class UserController {
       'application/json': {
         schema: {
           type: 'array',
-          items: getModelSchemaRef(User, {includeRelations: true}),
+          items: getModelSchemaRef(User, { includeRelations: true }),
         },
       },
     },
   })
-  async find(
-    @param.filter(User) filter?: Filter<User>,
-  ): Promise<User[]> {
-    return this.userRepository.find(filter);
+  async find(@param.filter(User) filter?: Filter<User>): Promise<User[]> {
+    return this.userRepository.find({
+      ...filter,
+      include: [
+        {
+          relation: 'role',
+        },
+      ],
+    });
   }
 
   @get('/users/{id}')
@@ -78,15 +100,19 @@ export class UserController {
     description: 'User model instance',
     content: {
       'application/json': {
-        schema: getModelSchemaRef(User, {includeRelations: true}),
+        schema: getModelSchemaRef(User, { includeRelations: true }),
       },
     },
   })
   async findById(
     @param.path.number('id') id: number,
-    @param.filter(User, {exclude: 'where'}) filter?: FilterExcludingWhere<User>
+    @param.filter(User, { exclude: 'where' })
+    filter?: FilterExcludingWhere<User>,
   ): Promise<User> {
-    return this.userRepository.findById(id, filter);
+    return this.userRepository.findById(id, {
+      ...filter,
+      include: [{ relation: 'role' }],
+    });
   }
 
   @put('/users/{id}')

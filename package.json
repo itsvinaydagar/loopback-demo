@@ -28,9 +28,10 @@
     "preopenapi-spec": "yarn run build",
     "openapi-spec": "node ./dist/openapi-spec",
     "prestart": "yarn run rebuild",
-    "start": "NODE_ENV=development && node -r source-map-support/register .",
+    "start": "set NODE_ENV=development && node -r source-map-support/register .",
     "clean": "lb-clean dist *.tsbuildinfo .eslintcache",
-    "rebuild": "yarn run clean && yarn run build"
+    "rebuild": "yarn run clean && yarn run build",
+    "dev": "set NODE_ENV=development && nodemon -r source-map-support/register . --watch src"
   },
   "repository": {
     "type": "git",
@@ -46,6 +47,7 @@
   ],
   "dependencies": {
     "@loopback/boot": "^4.0.1",
+    "@loopback/context": "^4.0.1",
     "@loopback/core": "^3.0.1",
     "@loopback/logging": "^0.7.1",
     "@loopback/repository": "^4.0.1",
@@ -53,6 +55,8 @@
     "@loopback/rest-explorer": "^4.0.1",
     "@loopback/service-proxy": "^4.0.1",
     "dotenv": "^11.0.0",
+    "loopback-connector-postgresql": "^5.0.1",
+    "nodemon": "^2.0.15",
     "tslib": "^2.0.0"
   },
   "devDependencies": {

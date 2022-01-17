@@ -45,7 +45,7 @@ if (require.main === module) {
         setServersFromRequest: true,
       },
       cors: {
-        origin: 'http://localhost:3000',
+        origin: '*',
         methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
       },
     },

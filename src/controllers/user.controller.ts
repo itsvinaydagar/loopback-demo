@@ -111,7 +111,7 @@ export class UserController {
   ): Promise<User> {
     return this.userRepository.findById(id, {
       ...filter,
-      include: [{ relation: 'role' }],
+      // include: [{ relation: 'role' }],
     });
   }
 

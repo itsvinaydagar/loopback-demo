@@ -1,3 +1,5 @@
+import { AuthenticationComponent } from '@loopback/authentication';
+import { JWTAuthenticationComponent } from '@loopback/authentication-jwt';
 import { BootMixin } from '@loopback/boot';
 import { ApplicationConfig } from '@loopback/core';
 import { RepositoryMixin } from '@loopback/repository';
@@ -31,6 +33,10 @@ export class LoopbackDemoApplication extends BootMixin(
       path: '/explorer',
     });
     this.component(RestExplorerComponent);
+
+    // JWT authentication components
+    this.component(AuthenticationComponent);
+    this.component(JWTAuthenticationComponent);
 
     // Defining Static global values, to use in the application via Dependency Injection
     this.bind('bcrypt.rounds').to(10);

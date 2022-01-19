@@ -23,7 +23,9 @@ export class AuthService implements IAuthService {
 
     if (!user) throw new HttpErrors.NotFound('User not found');
 
-    return (await compare(password, user.password)) ? (user.id as number) : 0;
+    return (await compare(password, user.password as string))
+      ? (user.id as number)
+      : 0;
   }
 
   signJwt(payload: object | string): string {

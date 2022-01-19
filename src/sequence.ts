@@ -1,4 +1,6 @@
 import {
+  AuthenticateFn,
+  AuthenticationBindings,
   AUTHENTICATION_STRATEGY_NOT_FOUND,
   USER_PROFILE_NOT_FOUND,
 } from '@loopback/authentication';
@@ -31,6 +33,9 @@ export class MySequence implements SequenceHandler {
     @inject(SequenceActions.FIND_ROUTE) protected findRoute: FindRoute,
     @inject(SequenceActions.PARSE_PARAMS) protected parseParams: ParseParams,
     @inject(SequenceActions.INVOKE_METHOD) protected invoke: InvokeMethod,
+    // JWT authentication
+    @inject(AuthenticationBindings.AUTH_ACTION)
+    protected authenticateRequest: AuthenticateFn,
   ) {}
 
   @logInvocation()
@@ -53,6 +58,7 @@ export class MySequence implements SequenceHandler {
 
       const route = this.findRoute(request);
       const args = await this.parseParams(request, route);
+      await this.authenticateRequest(request);
 
       const result = await this.invoke(route, args);
 

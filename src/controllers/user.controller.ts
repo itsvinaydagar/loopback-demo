@@ -1,3 +1,4 @@
+import { authenticate } from '@loopback/authentication';
 import {
   Count,
   CountSchema,
@@ -11,7 +12,6 @@ import {
   get,
   getModelSchemaRef,
   param,
-  post,
   put,
   requestBody,
   response,
@@ -27,43 +27,8 @@ export class UserController {
     public roleRepository: RoleRepository,
   ) {}
 
-  @post('/users/{role}')
-  @response(200, {
-    description: 'User model instance',
-    content: { 'application/json': { schema: getModelSchemaRef(User) } },
-  })
-  async create(
-    @param.path.string('role') role: string,
-    @requestBody({
-      content: {
-        'application/json': {
-          schema: getModelSchemaRef(User, {
-            title: 'NewUser',
-          }),
-        },
-      },
-    })
-    user: User,
-  ): Promise<User> {
-    const userRole = await this.roleRepository.findOne({
-      where: {
-        key: role,
-      },
-    });
-
-    if (!userRole) throw new Error('Role not defined');
-
-    console.log(userRole);
-    // const isRoleValid = !!Role[user.role as Role];
-    // if (!isRoleValid) throw new Error('Role does not exist!')
-
-    return this.userRepository.create({
-      ...user,
-      roleId: userRole?.id,
-    });
-  }
-
   @get('/users/count')
+  @authenticate('jwt')
   @response(200, {
     description: 'User model count',
     content: { 'application/json': { schema: CountSchema } },

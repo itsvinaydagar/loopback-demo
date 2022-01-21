@@ -2,16 +2,15 @@ import { inject } from '@loopback/core';
 import { DefaultCrudRepository } from '@loopback/repository';
 import { AuditDbSourceName } from '@sourceloop/audit-log';
 import { PostgresDataSource } from '../datasources';
-import { Role, RoleRelations } from '../models';
+import { AuditLog } from '../models';
 
-export class RoleRepository extends DefaultCrudRepository<
-  Role,
-  typeof Role.prototype.id,
-  RoleRelations
+export class AuditLogRepository extends DefaultCrudRepository<
+  AuditLog,
+  typeof AuditLog.prototype.id
 > {
   constructor(
     @inject(`datasources.${AuditDbSourceName}`) dataSource: PostgresDataSource,
   ) {
-    super(Role, dataSource);
+    super(AuditLog, dataSource);
   }
 }

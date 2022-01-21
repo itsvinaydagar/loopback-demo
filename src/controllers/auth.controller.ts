@@ -11,7 +11,11 @@ import {
 } from '@loopback/rest';
 import { BinderKeys } from '../keys';
 import { User } from '../models';
-import { RoleRepository, UserRepository } from '../repositories';
+import {
+  AuditLogRepository,
+  RoleRepository,
+  UserRepository,
+} from '../repositories';
 import { AuthService } from '../services/auth-service';
 import { BcryptHash } from '../services/hash-password';
 
@@ -21,6 +25,8 @@ export class AuthController {
     public userRepository: UserRepository,
     @repository(RoleRepository)
     public roleRepository: RoleRepository,
+    @repository(AuditLogRepository)
+    public auditRepository: AuditLogRepository,
     @inject(BinderKeys.ENCRYPT)
     public encrypt: BcryptHash,
     @inject(BinderKeys.AUTHSERVICE)
@@ -65,6 +71,26 @@ export class AuthController {
       password: hashedPassword,
       roleId: userRole.id,
     });
+
+    // await (
+    //   await this.userRepository.getAuditLogRepository()
+    // ).create({
+    //   id: Date.now().toString(),
+    //   action: Action.INSERT_ONE,
+    //   actedAt: new Date(),
+    //   entityId: newUser.id?.toString(),
+    //   actionKey: 'User_Logs',
+    //   actor: 'user',
+    // });
+
+    // await this.auditRepository.create({
+    //   // id: '1',
+    //   action: Action.INSERT_ONE,
+    //   actedAt: new Date(),
+    //   entityId: newUser.id?.toString(),
+    //   // actionKey: 'user_created',
+    //   actor: 'user',
+    // });
 
     delete newUser.password;
     return newUser;

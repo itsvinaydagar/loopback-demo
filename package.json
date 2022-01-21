@@ -54,6 +54,7 @@
     "@loopback/rest": "^11.0.1",
     "@loopback/rest-explorer": "^4.0.1",
     "@loopback/service-proxy": "^4.0.1",
+    "@sourceloop/audit-log": "^3.0.0",
     "bcryptjs": "^2.4.3",
     "dotenv": "^11.0.0",
     "jsonwebtoken": "^8.5.1",

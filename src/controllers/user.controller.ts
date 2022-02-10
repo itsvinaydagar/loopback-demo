@@ -1,4 +1,3 @@
-import { authenticate } from '@loopback/authentication';
 import {
   Count,
   CountSchema,
@@ -16,6 +15,8 @@ import {
   requestBody,
   response,
 } from '@loopback/rest';
+import { authenticate, STRATEGY } from 'loopback4-authentication';
+import { authorize } from 'loopback4-authorization';
 import { User } from '../models';
 import { RoleRepository, UserRepository } from '../repositories';
 
@@ -27,24 +28,33 @@ export class UserController {
     public roleRepository: RoleRepository,
   ) {}
 
-  @get('/users/count')
-  @authenticate('jwt')
-  @response(200, {
-    description: 'User model count',
-    content: { 'application/json': { schema: CountSchema } },
+  @authenticate(STRATEGY.BEARER)
+  @authorize({ permissions: ['Admin'] })
+  @get('/users/count', {
+    responses: {
+      200: {
+        description: 'User model count',
+        content: { 'application/json': { schema: CountSchema } },
+      },
+    },
   })
   async count(@param.where(User) where?: Where<User>): Promise<Count> {
     return this.userRepository.count(where);
   }
 
-  @get('/users')
-  @response(200, {
-    description: 'Array of User model instances',
-    content: {
-      'application/json': {
-        schema: {
-          type: 'array',
-          items: getModelSchemaRef(User, { includeRelations: true }),
+  @authenticate(STRATEGY.BEARER)
+  @authorize({ permissions: ['*'] })
+  @get('/users', {
+    responses: {
+      200: {
+        description: 'Array of User model instances',
+        content: {
+          'application/json': {
+            schema: {
+              type: 'array',
+              items: getModelSchemaRef(User, { includeRelations: true }),
+            },
+          },
         },
       },
     },

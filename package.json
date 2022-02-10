@@ -59,6 +59,8 @@
     "dotenv": "^11.0.0",
     "jsonwebtoken": "^8.5.1",
     "loopback-connector-postgresql": "^5.0.1",
+    "loopback4-authentication": "^6.0.0",
+    "loopback4-authorization": "^5.0.0",
     "tslib": "^2.0.0"
   },
   "devDependencies": {

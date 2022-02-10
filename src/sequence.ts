@@ -1,6 +1,4 @@
 import {
-  AuthenticateFn,
-  AuthenticationBindings,
   AUTHENTICATION_STRATEGY_NOT_FOUND,
   USER_PROFILE_NOT_FOUND,
 } from '@loopback/authentication';
@@ -12,6 +10,7 @@ import {
 } from '@loopback/logging';
 import {
   FindRoute,
+  HttpErrors,
   InvokeMethod,
   InvokeMiddleware,
   ParseParams,
@@ -21,6 +20,16 @@ import {
   SequenceActions,
   SequenceHandler,
 } from '@loopback/rest';
+import {
+  AuthenticateFn,
+  AuthenticationBindings,
+} from 'loopback4-authentication';
+import {
+  AuthorizationBindings,
+  AuthorizeErrorKeys,
+  AuthorizeFn,
+} from 'loopback4-authorization';
+import { AuthUser } from './providers/auth.provider';
 
 export class MySequence implements SequenceHandler {
   @inject(SequenceActions.INVOKE_MIDDLEWARE, { optional: true })
@@ -34,8 +43,11 @@ export class MySequence implements SequenceHandler {
     @inject(SequenceActions.PARSE_PARAMS) protected parseParams: ParseParams,
     @inject(SequenceActions.INVOKE_METHOD) protected invoke: InvokeMethod,
     // JWT authentication
-    @inject(AuthenticationBindings.AUTH_ACTION)
-    protected authenticateRequest: AuthenticateFn,
+    @inject(AuthenticationBindings.USER_AUTH_ACTION)
+    protected authenticateRequest: AuthenticateFn<AuthUser>,
+    // Authorization
+    @inject(AuthorizationBindings.AUTHORIZE_ACTION)
+    protected checkAuthorisation: AuthorizeFn, // @inject(AuthorizationBindings.USER_PERMISSIONS) // private readonly getUserPermissions: UserPermissionsFn<string>,
   ) {}
 
   @logInvocation()
@@ -58,7 +70,16 @@ export class MySequence implements SequenceHandler {
 
       const route = this.findRoute(request);
       const args = await this.parseParams(request, route);
-      await this.authenticateRequest(request);
+      const authUser: AuthUser = await this.authenticateRequest(request);
+
+      const isAccessAllowed = await this.checkAuthorisation(
+        authUser.permissions ?? [],
+        request,
+      );
+
+      if (!isAccessAllowed) {
+        throw new HttpErrors.Forbidden(AuthorizeErrorKeys.NotAllowedAccess);
+      }
 
       const result = await this.invoke(route, args);
 

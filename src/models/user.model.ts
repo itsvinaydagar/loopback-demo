@@ -14,6 +14,12 @@ export class User extends Entity {
     type: 'string',
     required: true,
   })
+  username: string;
+
+  @property({
+    type: 'string',
+    required: true,
+  })
   firstName: string;
 
   @property({
@@ -74,6 +80,7 @@ export class User extends Entity {
 
 export interface UserRelations {
   // describe navigational properties here
+  role?: Role;
 }
 
 export type UserWithRelations = User & UserRelations;

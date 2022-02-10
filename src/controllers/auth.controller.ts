@@ -144,7 +144,6 @@ export class AuthController {
     );
 
     if (!userId) throw new HttpErrors.NotFound('Password does not matched!');
-
     const token = this.auth.signJwt({ userId });
     return { token };
   }

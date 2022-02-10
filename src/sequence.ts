@@ -3,11 +3,7 @@ import {
   USER_PROFILE_NOT_FOUND,
 } from '@loopback/authentication';
 import { inject } from '@loopback/core';
-import {
-  LoggingBindings,
-  logInvocation,
-  WinstonLogger,
-} from '@loopback/logging';
+import { logInvocation } from '@loopback/logging';
 import {
   FindRoute,
   HttpErrors,
@@ -29,6 +25,8 @@ import {
   AuthorizeErrorKeys,
   AuthorizeFn,
 } from 'loopback4-authorization';
+import { BinderKeys } from './keys';
+import { ILogger } from './logger.interface';
 import { AuthUser } from './providers/auth.provider';
 
 export class MySequence implements SequenceHandler {
@@ -36,7 +34,7 @@ export class MySequence implements SequenceHandler {
   protected invokeMiddleware: InvokeMiddleware = () => false;
 
   constructor(
-    @inject(LoggingBindings.WINSTON_LOGGER) public logger: WinstonLogger,
+    @inject(BinderKeys.LOGGER) public logger: ILogger,
     @inject(SequenceActions.SEND) public send: Send,
     @inject(SequenceActions.REJECT) public reject: Reject,
     @inject(SequenceActions.FIND_ROUTE) protected findRoute: FindRoute,
@@ -52,19 +50,19 @@ export class MySequence implements SequenceHandler {
 
   @logInvocation()
   async handle(context: RequestContext) {
-    // const requestTime = Date.now();
+    const requestTime = Date.now();
     try {
       const { request, response } = context;
-      // this.logger.info(
-      //   `Request ${request.method} ${
-      //     request.url
-      //   } started at ${requestTime.toString()}.
-      //   Request Details
-      //   Referer = ${request.headers.referer}
-      //   User-Agent = ${request.headers['user-agent']}
-      //   Remote Address = ${request.connection.remoteAddress}
-      //   Remote Address (Proxy) = ${request.headers['x-forwarded-for']}`,
-      // );
+      this.logger.info(
+        `Request ${request.method} ${
+          request.url
+        } started at ${requestTime.toString()}.
+        Request Details
+        Referer = ${request.headers.referer}
+        User-Agent = ${request.headers['user-agent']}
+        Remote Address = ${request.connection.remoteAddress}
+        Remote Address (Proxy) = ${request.headers['x-forwarded-for']}`,
+      );
       const finished = await this.invokeMiddleware(context);
       if (finished) return;
 
@@ -73,7 +71,7 @@ export class MySequence implements SequenceHandler {
       const authUser: AuthUser = await this.authenticateRequest(request);
 
       const isAccessAllowed = await this.checkAuthorisation(
-        authUser.permissions ?? [],
+        authUser?.permissions ?? [],
         request,
       );
 

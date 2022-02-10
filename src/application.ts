@@ -7,6 +7,7 @@ import {
   RestExplorerComponent,
 } from '@loopback/rest-explorer';
 import { ServiceMixin } from '@loopback/service-proxy';
+import * as dotenv from 'dotenv';
 import { AuthenticationComponent, Strategies } from 'loopback4-authentication';
 import {
   AuthorizationBindings,
@@ -15,6 +16,7 @@ import {
 import path from 'path';
 import { BinderKeys } from './keys';
 import { BearerTokenVerifyProvider } from './providers/auth.provider';
+import { LoggerProvider } from './providers/log.provider';
 import { MySequence } from './sequence';
 import { AuthService } from './services/auth-service';
 import { BcryptHash } from './services/hash-password';
@@ -24,6 +26,7 @@ export class LoopbackDemoApplication extends BootMixin(
   ServiceMixin(RepositoryMixin(RestApplication)),
 ) {
   constructor(options: ApplicationConfig = {}) {
+    dotenv.config();
     super(options);
 
     // Set up the custom sequence
@@ -55,13 +58,15 @@ export class LoopbackDemoApplication extends BootMixin(
     this.bind('bcrypt.rounds').to(10);
     this.bind(BinderKeys.AUTHSERVICE).toClass(AuthService);
     this.bind(BinderKeys.ENCRYPT).toClass(BcryptHash);
+    // Custom Logger
+    this.bind(BinderKeys.LOGGER).toProvider(LoggerProvider);
 
     this.projectRoot = __dirname;
     // Customize @loopback/boot Booter Conventions here
     this.bootOptions = {
       controllers: {
         // Customize ControllerBooter Conventions here
-        dirs: ['controllers'],
+        dirs: ['custom-controllers'],
         extensions: ['.controller.js'],
         nested: true,
       },

@@ -7,8 +7,8 @@ import {
   param,
   post,
   requestBody,
-  response,
 } from '@loopback/rest';
+import { authorize } from 'loopback4-authorization';
 import { BinderKeys } from '../keys';
 import { User } from '../models';
 import {
@@ -33,10 +33,14 @@ export class AuthController {
     public auth: AuthService,
   ) {}
 
-  @post('/authh/register/{role}')
-  @response(201, {
-    content: {
-      'application/json': { schema: getJsonSchemaRef(User) },
+  @authorize({ permissions: ['*'] })
+  @post('/authh/register/{role}', {
+    responses: {
+      201: {
+        content: {
+          'application/json': { schema: getJsonSchemaRef(User) },
+        },
+      },
     },
   })
   async signup(
@@ -96,15 +100,19 @@ export class AuthController {
     return newUser;
   }
 
-  @post('/auth/login')
-  @response(200, {
-    content: {
-      'application/json': {
-        schema: {
-          type: 'object',
-          properties: {
-            token: {
-              type: 'string',
+  @authorize({ permissions: ['*'] })
+  @post('/auth/login', {
+    responses: {
+      200: {
+        content: {
+          'application/json': {
+            schema: {
+              type: 'object',
+              properties: {
+                token: {
+                  type: 'string',
+                },
+              },
             },
           },
         },

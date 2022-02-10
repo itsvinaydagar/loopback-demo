@@ -1,10 +1,5 @@
-import {Entity, model, property} from '@loopback/repository';
-
-export enum Role {
-  SuperAdmin = "SuperAdmin",
-  Admin = "Admin",
-  Subscriber = "Subscriber",
-}
+import { belongsTo, Entity, model, property } from '@loopback/repository';
+import { Role } from '.';
 
 @model()
 export class User extends Entity {
@@ -14,6 +9,12 @@ export class User extends Entity {
     generated: true,
   })
   id?: number;
+
+  @property({
+    type: 'string',
+    required: true,
+  })
+  username: string;
 
   @property({
     type: 'string',
@@ -34,13 +35,6 @@ export class User extends Entity {
   @property({
     type: 'string',
     required: true,
-    default: Role.Admin
-  })
-  role: string;
-
-  @property({
-    type: 'string',
-    required: true,
   })
   email: string;
 
@@ -55,8 +49,14 @@ export class User extends Entity {
   address?: string;
 
   @property({
+    type: 'string',
+    required: true,
+  })
+  password?: string;
+
+  @property({
     type: 'date',
-    default: Date.now(),
+    default: new Date(),
   })
   createdOn?: string;
 
@@ -65,6 +65,13 @@ export class User extends Entity {
   })
   modifiedOn?: string;
 
+  // @property({
+  //   type: 'number',
+  // })
+  // roleId?: number;
+
+  @belongsTo(() => Role)
+  roleId: number;
 
   constructor(data?: Partial<User>) {
     super(data);
@@ -73,6 +80,7 @@ export class User extends Entity {
 
 export interface UserRelations {
   // describe navigational properties here
+  role?: Role;
 }
 
 export type UserWithRelations = User & UserRelations;

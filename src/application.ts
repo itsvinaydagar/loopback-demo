@@ -1,21 +1,32 @@
-import {BootMixin} from '@loopback/boot';
-import {ApplicationConfig} from '@loopback/core';
+import { BootMixin } from '@loopback/boot';
+import { ApplicationConfig } from '@loopback/core';
+import { RepositoryMixin } from '@loopback/repository';
+import { RestApplication } from '@loopback/rest';
 import {
   RestExplorerBindings,
   RestExplorerComponent,
 } from '@loopback/rest-explorer';
-import {RepositoryMixin} from '@loopback/repository';
-import {RestApplication} from '@loopback/rest';
-import {ServiceMixin} from '@loopback/service-proxy';
+import { ServiceMixin } from '@loopback/service-proxy';
+import * as dotenv from 'dotenv';
+import { AuthenticationComponent, Strategies } from 'loopback4-authentication';
+import {
+  AuthorizationBindings,
+  AuthorizationComponent,
+} from 'loopback4-authorization';
 import path from 'path';
-import {MySequence} from './sequence';
-
-export {ApplicationConfig};
+import { BinderKeys } from './keys';
+import { BearerTokenVerifyProvider } from './providers/auth.provider';
+import { LoggerProvider } from './providers/log.provider';
+import { MySequence } from './sequence';
+import { AuthService } from './services/auth-service';
+import { BcryptHash } from './services/hash-password';
+export { ApplicationConfig };
 
 export class LoopbackDemoApplication extends BootMixin(
   ServiceMixin(RepositoryMixin(RestApplication)),
 ) {
   constructor(options: ApplicationConfig = {}) {
+    dotenv.config();
     super(options);
 
     // Set up the custom sequence
@@ -30,12 +41,32 @@ export class LoopbackDemoApplication extends BootMixin(
     });
     this.component(RestExplorerComponent);
 
+    // authentication components
+    this.component(AuthenticationComponent);
+
+    // Implementing Authorization components
+    this.bind(AuthorizationBindings.CONFIG).to({
+      allowAlwaysPaths: ['/explorer'],
+    });
+    this.component(AuthorizationComponent);
+
+    this.bind(Strategies.Passport.BEARER_TOKEN_VERIFIER).toProvider(
+      BearerTokenVerifyProvider,
+    );
+
+    // Defining Static global values, to use in the application via Dependency Injection
+    this.bind('bcrypt.rounds').to(10);
+    this.bind(BinderKeys.AUTHSERVICE).toClass(AuthService);
+    this.bind(BinderKeys.ENCRYPT).toClass(BcryptHash);
+    // Custom Logger
+    this.bind(BinderKeys.LOGGER).toProvider(LoggerProvider);
+
     this.projectRoot = __dirname;
     // Customize @loopback/boot Booter Conventions here
     this.bootOptions = {
       controllers: {
         // Customize ControllerBooter Conventions here
-        dirs: ['controllers'],
+        dirs: ['custom-controllers'],
         extensions: ['.controller.js'],
         nested: true,
       },

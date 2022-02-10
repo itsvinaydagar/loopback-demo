@@ -1,11 +1,6 @@
-import {inject} from '@loopback/core';
-import {
-  Request,
-  RestBindings,
-  get,
-  response,
-  ResponseObject,
-} from '@loopback/rest';
+import { inject } from '@loopback/core';
+import { get, Request, ResponseObject, RestBindings } from '@loopback/rest';
+import { authorize } from 'loopback4-authorization';
 
 /**
  * OpenAPI response for ping()
@@ -18,13 +13,13 @@ const PING_RESPONSE: ResponseObject = {
         type: 'object',
         title: 'PingResponse',
         properties: {
-          greeting: {type: 'string'},
-          date: {type: 'string'},
-          url: {type: 'string'},
+          greeting: { type: 'string' },
+          date: { type: 'string' },
+          url: { type: 'string' },
           headers: {
             type: 'object',
             properties: {
-              'Content-Type': {type: 'string'},
+              'Content-Type': { type: 'string' },
             },
             additionalProperties: true,
           },
@@ -41,8 +36,12 @@ export class PingController {
   constructor(@inject(RestBindings.Http.REQUEST) private req: Request) {}
 
   // Map to `GET /ping`
-  @get('/ping')
-  @response(200, PING_RESPONSE)
+  @authorize({ permissions: ['*'] })
+  @get('/ping', {
+    responses: {
+      200: PING_RESPONSE,
+    },
+  })
   ping(): object {
     // Reply with a greeting, the current time, the url, and request headers
     return {
